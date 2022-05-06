@@ -16,7 +16,18 @@ db.commit()
 # Функции
 
 # Расчет маржи
-# Добавление товара
+# Добавление кол-во товара
+def AddPieces(code,pieces):
+    item = sql.execute(f'SELECT * FROM AllItem WHERE code = "{code}"').fetchone()
+    sum = int(item[2]) + int(pieces)
+    sql.execute(f'UPDATE AllItem SET pieces = "{sum}" WHERE code = "{code}"')
+    print('Кол-во товара изменено')
+    ViewTable(f"{code}")
+
+
+
+
+
 
 # Добавление товара
 def AddItem(code, item, pieces, price):
@@ -28,8 +39,16 @@ def AddItem(code, item, pieces, price):
         print("Товар добавлен!")
         ViewTable(f"{code}")
     else:
-        print('Такой товар уже есть!')
+        print('Такой код товара уже есть!')
         time.sleep(1)
+        logs = int(input('Добавить указанное кол-во в товар: ' + f"{item}" + " ?\n1. Да\n2. Нет\n"))
+        if logs == 1:
+            AddPieces(f"{code}",f"{pieces}")
+        elif logs == 2:
+            print('Выход в меню')
+            time.sleep(2)
+        else:
+            print('Error')
     print("Возврат в меню")
     time.sleep(1)
     menu()
