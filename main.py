@@ -22,7 +22,6 @@ def AddItem(item, pieces):
         db.commit()
         print("Товар добавлен!")
         ViewTable(f"{Up_item}")
-        # Добавить функцию вывода еденичного товара
     else:
         print('Такой товар уже есть!')
         time.sleep(1)
@@ -41,12 +40,24 @@ def AddItem(item, pieces):
             time.sleep(1)
         else:
             print("Error")
+    print("Возврат в меню")
+    time.sleep(1)
+    menu()
 
 
 # Удаление товара
-# Отображение остатков
+def DeleteItem(name):
+    UpName = name.upper()
+    sql.execute(f"DELETE FROM AllItem WHERE name = '{UpName}'")
+    print("Товар удален!")
+    print("Возврат в меню")
+    time.sleep(1)
+    menu()
+
+
 # Расчет маржи
-# Корректное отображение одного товара
+
+# Корректное отображение остатков товара
 def ViewTable(name_item):
     string_up = name_item.upper()
     table = sql.execute(f"SELECT * FROM AllItem WHERE name = '{string_up}'").fetchall()
@@ -63,7 +74,9 @@ def ViewTable(name_item):
             else:
                 print("Error")
         q += 1
-    return string_up
+    print("Возврат в меню")
+    time.sleep(1)
+    menu()
 
 
 # Корректное отображение всей таблицы
@@ -84,20 +97,26 @@ def ViewAllTable():
                 print("Error")
         q += 1
         i -= 2
+    print("Возврат в меню")
+    time.sleep(1)
+    menu()
 
 
 # Меню
 def menu():
-    logist = int(input("1. Добавить товар\n2. Посмотреть все товары\n3. Посмотреть остатки товара\n"))
+    logist = int(input("1. Добавить товар\n2. Посмотреть все товары\n3. Посмотреть остатки товара\n4. Удалить товар\n"))
     if logist == 1:
         menu_item = input("Введите название товара: ")
         menu_pic = int(input("Введите кол-во товара: "))
-        AddItem(menu_item,menu_pic)
+        AddItem(menu_item, menu_pic)
     elif logist == 2:
         ViewAllTable()
     elif logist == 3:
         menu_name = input('Введите название товара: ')
         ViewTable(menu_name)
+    elif logist == 4:
+        menu_del = input('Введите название удаляемого товара: ')
+        DeleteItem(menu_del)
     else:
         print("Error")
 
