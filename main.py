@@ -93,7 +93,7 @@ def ViewTable(item_code):
 
 # Корректное отображение всей таблицы
 def ViewAllTable():
-    table = sql.execute("SELECT * FROM AllItem").fetchall()
+    table = sql.execute("SELECT * FROM AllItem ORDER BY code").fetchall()
     q = 0
     i = 0
     while q != len(table):
@@ -139,6 +139,7 @@ def menu():
         DeleteItem(menu_del)
     elif logist == 5:
         print("Всего доброго!")
+        time.sleep(3)
     else:
         print("Error")
 
