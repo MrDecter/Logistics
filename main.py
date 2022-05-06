@@ -6,7 +6,8 @@ db = sqlite3.connect('item.db')
 sql = db.cursor()
 sql.execute("""CREATE TABLE IF NOT EXISTS AllItem (
     name TEXT,
-    pieces INTEGER
+    pieces INTEGER,
+    price INTEGER
     )""")
 db.commit()
 
@@ -14,11 +15,11 @@ db.commit()
 # Функции
 
 # Добавление товара
-def AddItem(item, pieces):
+def AddItem(item, pieces, price):
     Up_item = item.upper()
     sql.execute(f"SELECT name FROM AllItem WHERE name = '{Up_item}'")
     if sql.fetchone() is None:
-        sql.execute(f'INSERT INTO AllItem VALUES(?,?)', (Up_item, pieces))
+        sql.execute(f'INSERT INTO AllItem VALUES(?,?,?)', (Up_item, pieces,price))
         db.commit()
         print("Товар добавлен!")
         ViewTable(f"{Up_item}")
@@ -31,7 +32,7 @@ def AddItem(item, pieces):
             pieces_item = sql.execute(f'SELECT pieces FROM AllItem WHERE name = "{item}"').fetchone()
             sum_pieces = pieces_item[0] + int(f"{pieces}")
             sql.execute(f'DELETE FROM AllItem WHERE name = "{item}"')
-            sql.execute(f'INSERT INTO AllItem VALUES(?,?)', (item, sum_pieces))
+            sql.execute(f'INSERT INTO AllItem VALUES(?,?,?)', (item, sum_pieces, price))
             db.commit()
             print('Кол-во товара измененно!')
             print(sql.execute(f"SELECT * FROM AllItem").fetchall())
@@ -64,12 +65,15 @@ def ViewTable(name_item):
     q = 0
     i = 0
     while q != len(table):
-        while i != 2:
+        while i != 3:
             if i == 0:
                 print('Название: ' + table[q][i])
                 i += 1
             elif i == 1:
                 print('Кол-во: ' + str(table[q][i]))
+                i += 1
+            elif i == 2:
+                print('Стоимость за шт: ' + str(table[q][i]))
                 i += 1
             else:
                 print("Error")
@@ -86,17 +90,20 @@ def ViewAllTable():
     i = 0
     while q != len(table):
         print("---------------")
-        while i != 2:
+        while i != 3:
             if i == 0:
                 print('Название: ' + table[q][i])
                 i += 1
             elif i == 1:
                 print('Кол-во: ' + str(table[q][i]))
                 i += 1
+            elif i == 2:
+                print('Стоимость за шт: ' + str(table[q][i]))
+                i += 1
             else:
                 print("Error")
         q += 1
-        i -= 2
+        i -= 3
     print("Возврат в меню")
     time.sleep(1)
     menu()
@@ -108,7 +115,8 @@ def menu():
     if logist == 1:
         menu_item = input("Введите название товара: ")
         menu_pic = int(input("Введите кол-во товара: "))
-        AddItem(menu_item, menu_pic)
+        menu_price = int(input("Введите стоимость товара за шт: "))
+        AddItem(menu_item, menu_pic, menu_price)
     elif logist == 2:
         ViewAllTable()
     elif logist == 3:
