@@ -5,6 +5,7 @@ import time
 db = sqlite3.connect('item.db')
 sql = db.cursor()
 sql.execute("""CREATE TABLE IF NOT EXISTS AllItem (
+    code INTEGER,
     name TEXT,
     pieces INTEGER,
     price INTEGER
@@ -14,71 +15,59 @@ db.commit()
 
 # Функции
 
+# Расчет маржи
 # Добавление товара
-def AddItem(item, pieces, price):
+
+# Добавление товара
+def AddItem(code, item, pieces, price):
     Up_item = item.upper()
-    sql.execute(f"SELECT name FROM AllItem WHERE name = '{Up_item}'")
+    sql.execute(f"SELECT code FROM AllItem WHERE code = '{code}'")
     if sql.fetchone() is None:
-        sql.execute(f'INSERT INTO AllItem VALUES(?,?,?)', (Up_item, pieces,price))
+        sql.execute(f'INSERT INTO AllItem VALUES(?,?,?,?)', (code, Up_item, pieces,price))
         db.commit()
         print("Товар добавлен!")
-        ViewTable(f"{Up_item}")
+        ViewTable(f"{code}")
     else:
         print('Такой товар уже есть!')
         time.sleep(1)
-        logs = input('Добавить колличество к этому товару? (Да\Нет)\n').lower()
-        # Изменение кол-во товара
-        if logs == "да":
-            pieces_item = sql.execute(f'SELECT pieces FROM AllItem WHERE name = "{item}"').fetchone()
-            sum_pieces = pieces_item[0] + int(f"{pieces}")
-            sql.execute(f'DELETE FROM AllItem WHERE name = "{item}"')
-            sql.execute(f'INSERT INTO AllItem VALUES(?,?,?)', (item, sum_pieces, price))
-            db.commit()
-            print('Кол-во товара измененно!')
-            print(sql.execute(f"SELECT * FROM AllItem").fetchall())
-        elif logs == "нет":
-            print('Возврат в меню')
-            time.sleep(1)
-        else:
-            print("Error")
     print("Возврат в меню")
     time.sleep(1)
     menu()
 
 
 # Удаление товара
-def DeleteItem(name):
-    UpName = name.upper()
-    sql.execute(f"DELETE FROM AllItem WHERE name = '{UpName}'")
+def DeleteItem(code):
+    sql.execute(f"DELETE FROM AllItem WHERE code = '{code}'")
     print("Товар удален!")
     print("Возврат в меню")
     time.sleep(1)
     menu()
 
 
-# Расчет маржи
 
 # Корректное отображение остатков товара
-def ViewTable(name_item):
-    string_up = name_item.upper()
-    table = sql.execute(f"SELECT * FROM AllItem WHERE name = '{string_up}'").fetchall()
+def ViewTable(item_code):
+    table = sql.execute(f"SELECT * FROM AllItem WHERE code = '{item_code}'").fetchall()
     q = 0
     i = 0
     while q != len(table):
-        while i != 3:
+        while i != 4:
             if i == 0:
-                print('Название: ' + table[q][i])
+                print('Код: ' + str(table[q][i]))
                 i += 1
             elif i == 1:
-                print('Кол-во: ' + str(table[q][i]))
+                print('Название: ' + str(table[q][i]))
                 i += 1
             elif i == 2:
-                print('Стоимость за шт: ' + str(table[q][i]))
+                print('Кол-во: ' + str(table[q][i]))
+                i += 1
+            elif i == 3:
+                print('Стоимость за шт: ' + str(table[q][i]) + 'р.')
                 i += 1
             else:
                 print("Error")
         q += 1
-    print("Возврат в меню")
+    print("\nВозврат в меню")
     time.sleep(1)
     menu()
 
@@ -90,41 +79,47 @@ def ViewAllTable():
     i = 0
     while q != len(table):
         print("---------------")
-        while i != 3:
+        while i != 4:
             if i == 0:
-                print('Название: ' + table[q][i])
+                print('Код: ' + str(table[q][i]))
                 i += 1
             elif i == 1:
-                print('Кол-во: ' + str(table[q][i]))
+                print('Название: ' + str(table[q][i]))
                 i += 1
             elif i == 2:
-                print('Стоимость за шт: ' + str(table[q][i]))
+                print('Кол-во: ' + str(table[q][i]))
+                i += 1
+            elif i == 3:
+                print('Цена: ' + str(table[q][i]) + 'р.')
                 i += 1
             else:
                 print("Error")
         q += 1
-        i -= 3
-    print("Возврат в меню")
+        i -= 4
+    print("\nВозврат в меню")
     time.sleep(1)
     menu()
 
 
 # Меню
 def menu():
-    logist = int(input("1. Добавить товар\n2. Посмотреть все товары\n3. Посмотреть остатки товара\n4. Удалить товар\n"))
+    logist = int(input("1. Добавить товар\n2. Посмотреть все товары\n3. Посмотреть остатки товара\n4. Удалить товар\n5. Выход\n"))
     if logist == 1:
+        menu_code = int(input("Введите код товара: "))
         menu_item = input("Введите название товара: ")
         menu_pic = int(input("Введите кол-во товара: "))
         menu_price = int(input("Введите стоимость товара за шт: "))
-        AddItem(menu_item, menu_pic, menu_price)
+        AddItem(menu_code, menu_item, menu_pic, menu_price)
     elif logist == 2:
         ViewAllTable()
     elif logist == 3:
-        menu_name = input('Введите название товара: ')
+        menu_name = int(input('Введите код товара: '))
         ViewTable(menu_name)
     elif logist == 4:
-        menu_del = input('Введите название удаляемого товара: ')
+        menu_del = input('Введите код удаляемого товара: ')
         DeleteItem(menu_del)
+    elif logist == 5:
+        print("Всего доброго!")
     else:
         print("Error")
 
