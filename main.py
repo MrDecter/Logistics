@@ -17,33 +17,29 @@ db.commit()
 
 # Расчет маржи
 # Добавление кол-во товара
-def AddPieces(code,pieces):
+def add_pieces(code, pieces):
     item = sql.execute(f'SELECT * FROM AllItem WHERE code = "{code}"').fetchone()
     sum = int(item[2]) + int(pieces)
     sql.execute(f'UPDATE AllItem SET pieces = "{sum}" WHERE code = "{code}"')
     print('Кол-во товара изменено')
-    ViewTable(f"{code}")
-
-
-
-
+    view_table(f"{code}")
 
 
 # Добавление товара
-def AddItem(code, item, pieces, price):
+def add_item(code, item, pieces, price):
     Up_item = item.upper()
     sql.execute(f"SELECT code FROM AllItem WHERE code = '{code}'")
     if sql.fetchone() is None:
-        sql.execute(f'INSERT INTO AllItem VALUES(?,?,?,?)', (code, Up_item, pieces,price))
+        sql.execute(f'INSERT INTO AllItem VALUES(?,?,?,?)', (code, Up_item, pieces, price))
         db.commit()
         print("Товар добавлен!")
-        ViewTable(f"{code}")
+        view_table(f"{code}")
     else:
         print('Такой код товара уже есть!')
         time.sleep(1)
         logs = int(input('Добавить указанное кол-во в товар: ' + f"{item}" + " ?\n1. Да\n2. Нет\n"))
         if logs == 1:
-            AddPieces(f"{code}",f"{pieces}")
+            add_pieces(f"{code}", f"{pieces}")
         elif logs == 2:
             print('Выход в меню')
             time.sleep(2)
@@ -55,7 +51,7 @@ def AddItem(code, item, pieces, price):
 
 
 # Удаление товара
-def DeleteItem(code):
+def delete_item(code):
     sql.execute(f"DELETE FROM AllItem WHERE code = '{code}'")
     print("Товар удален!")
     print("Возврат в меню")
@@ -63,9 +59,8 @@ def DeleteItem(code):
     menu()
 
 
-
 # Корректное отображение остатков товара
-def ViewTable(item_code):
+def view_table(item_code):
     table = sql.execute(f"SELECT * FROM AllItem WHERE code = '{item_code}'").fetchall()
     q = 0
     i = 0
@@ -92,7 +87,7 @@ def ViewTable(item_code):
 
 
 # Корректное отображение всей таблицы
-def ViewAllTable():
+def view_all_table():
     table = sql.execute("SELECT * FROM AllItem ORDER BY code").fetchall()
     q = 0
     i = 0
@@ -122,21 +117,22 @@ def ViewAllTable():
 
 # Меню
 def menu():
-    logist = int(input("1. Добавить товар\n2. Посмотреть все товары\n3. Посмотреть остатки товара\n4. Удалить товар\n5. Выход\n"))
+    logist = int(input(
+        "1. Добавить товар\n2. Посмотреть все товары\n3. Посмотреть остатки товара\n4. Удалить товар\n5. Выход\n"))
     if logist == 1:
         menu_code = int(input("Введите код товара: "))
         menu_item = input("Введите название товара: ")
         menu_pic = int(input("Введите кол-во товара: "))
         menu_price = int(input("Введите стоимость товара за шт: "))
-        AddItem(menu_code, menu_item, menu_pic, menu_price)
+        add_item(menu_code, menu_item, menu_pic, menu_price)
     elif logist == 2:
-        ViewAllTable()
+        view_all_table()
     elif logist == 3:
         menu_name = int(input('Введите код товара: '))
-        ViewTable(menu_name)
+        view_table(menu_name)
     elif logist == 4:
         menu_del = input('Введите код удаляемого товара: ')
-        DeleteItem(menu_del)
+        delete_item(menu_del)
     elif logist == 5:
         print("Всего доброго!")
         time.sleep(3)
