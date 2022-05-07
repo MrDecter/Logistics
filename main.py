@@ -30,7 +30,7 @@ def add_pieces(code, pieces):
     sum_item = int(item[2]) + int(pieces)
     sql.execute('UPDATE AllItem SET pieces = ? WHERE code = ?', (sum_item, code))
     print('Кол-во товара изменено')
-    view_table(f"{code}")
+    view_table(code)
 
 
 def add_item(code, item, pieces, price):
@@ -42,13 +42,13 @@ def add_item(code, item, pieces, price):
         sql.execute('INSERT INTO AllItem VALUES(?,?,?,?)', (code, Up_item, pieces, price))
         db.commit()
         print("Товар добавлен!")
-        view_table(f"{code}")
+        view_table(code)
     else:
         print('Такой код товара уже есть!')
         time.sleep(1)
         logs = int(input('Добавить указанное кол-во в товар: ' + f"{item}" + " ?\n1. Да\n2. Нет\n"))
         if logs == 1:
-            add_pieces(f"{code}", f"{pieces}")
+            add_pieces(code, pieces)
         elif logs == 2:
             print('Выход в меню')
             time.sleep(2)
@@ -93,7 +93,7 @@ def view_table(words, flag=True, item_code=0):
 
 def menu():
     """Функция управления"""
-
+    print("\nМеню: ")
     menu_manage = int(input(
         "1. Добавить товар\n2. Посмотреть все товары\n3. Посмотреть остатки товара\n4. Удалить товар\n5. Выход\n"))
     if menu_manage == 1:
@@ -125,6 +125,7 @@ def menu():
 
 
 # Запуск
-print("Добро пожаловать!")
+print("Добро пожаловать в \'Lite-Logistic\'!")
+time.sleep(2)
 menu()
 
